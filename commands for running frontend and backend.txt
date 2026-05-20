@@ -1,0 +1,13 @@
+FRONTEND:-
+
+cd C:\Users\niral\OneDrive\Desktop\Documents\MAIN_PROJECT\seo-automation-project_fixed-login----\seo-automation-project\frontend && npm run dev
+
+
+
+BACKEND:-
+
+cd C:\Users\niral\OneDrive\Desktop\Documents\MAIN_PROJECT\seo-automation-project_fixed-login----\seo-automation-project\backend && venv\Scripts\activate && python run.py
+
+
+Email: demo@example.com
+Password: Password123!
