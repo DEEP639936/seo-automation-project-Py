@@ -22,7 +22,7 @@ export function Websites() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isAuditing, setIsAuditing] = useState<string | null>(null)
 
-  const websites = data?.data?.data?.websites || data?.data?.websites || []
+  const websites = data?.data?.websites || []
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
