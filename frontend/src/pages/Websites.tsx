@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Globe, Plus, ExternalLink, Trash2, Edit3, Search, FileSearch, TrendingUp } from 'lucide-react'
+import { Globe, Plus, ExternalLink, Trash2, Edit3, FileSearch } from 'lucide-react'
 import { Card, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -10,7 +10,7 @@ import { ScoreRing } from '@/components/ui/ScoreRing'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { useData } from '@/hooks/useData'
 import { websiteAPI, auditAPI } from '@/services/api'
-import { truncate, cn } from '@/lib/utils'
+import { truncate } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
 export function Websites() {
@@ -22,7 +22,7 @@ export function Websites() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isAuditing, setIsAuditing] = useState<string | null>(null)
 
-  const websites = data?.data?.websites || []
+  const websites: any[] = (data as any)?.data?.websites || []
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -160,19 +160,26 @@ export function Websites() {
                     <div className="text-right">
                       <p className="text-xs text-dark-500">Last Crawled</p>
                       <p className="text-sm font-medium text-dark-700">
-                        {website.last_crawled_at ? new Date(website.last_crawled_at).toLocaleDateString() : 'Never'}
+                        {website.last_crawled_at
+                          ? new Date(website.last_crawled_at).toLocaleDateString()
+                          : 'Never'}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 mb-4">
                     {(website.target_keywords || []).slice(0, 3).map((kw: string) => (
-                      <span key={kw} className="px-2 py-1 bg-dark-100 rounded-lg text-xs text-dark-600 font-medium">
+                      <span
+                        key={kw}
+                        className="px-2 py-1 bg-dark-100 rounded-lg text-xs text-dark-600 font-medium"
+                      >
                         {kw}
                       </span>
                     ))}
                     {(website.target_keywords || []).length > 3 && (
-                      <span className="text-xs text-dark-400">+{website.target_keywords.length - 3} more</span>
+                      <span className="text-xs text-dark-400">
+                        +{website.target_keywords.length - 3} more
+                      </span>
                     )}
                   </div>
 
@@ -187,11 +194,7 @@ export function Websites() {
                       <FileSearch className="w-4 h-4" />
                       Audit
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEdit(website)}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => openEdit(website)}>
                       <Edit3 className="w-4 h-4" />
                     </Button>
                     <Button
@@ -243,7 +246,12 @@ export function Websites() {
             onChange={(e) => setForm({ ...form, target_keywords: e.target.value })}
           />
           <div className="flex gap-3 pt-2">
-            <Button type="button" variant="outline" className="flex-1" onClick={() => setIsModalOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={() => setIsModalOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" isLoading={isSubmitting} className="flex-1">

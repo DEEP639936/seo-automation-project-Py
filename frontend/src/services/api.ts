@@ -6,10 +6,10 @@ const API_URL = rawUrl.replace(/\/+$/, '')
 // ── localStorage fallback helpers ──────────────────────────────────────────
 const LS_KEY = 'seo_websites'
 
-function lsGetWebsites() {
+function lsGetWebsites(): any[] {
   try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]') } catch { return [] }
 }
-function lsSaveWebsite(data: any) {
+function lsSaveWebsite(data: any): any {
   const list = lsGetWebsites()
   const site = {
     id: String(Date.now()),
@@ -26,11 +26,11 @@ function lsSaveWebsite(data: any) {
   localStorage.setItem(LS_KEY, JSON.stringify(list))
   return site
 }
-function lsUpdateWebsite(id: string, data: any) {
+function lsUpdateWebsite(id: string, data: any): void {
   const list = lsGetWebsites().map((s: any) => s.id === id ? { ...s, ...data } : s)
   localStorage.setItem(LS_KEY, JSON.stringify(list))
 }
-function lsDeleteWebsite(id: string) {
+function lsDeleteWebsite(id: string): void {
   localStorage.setItem(LS_KEY, JSON.stringify(lsGetWebsites().filter((s: any) => s.id !== id)))
 }
 // ───────────────────────────────────────────────────────────────────────────
@@ -87,27 +87,24 @@ export const authAPI = {
 }
 
 export const websiteAPI = {
-  getAll: async () => {
+  getAll: async (): Promise<{ data: { websites: any[] } }> => {
     try {
       const res = await api.get('/websites')
-      const backendSites = res.data?.websites || res.data || []
-      const localSites = lsGetWebsites().filter(
+      const backendSites: any[] = res.data?.websites || res.data || []
+      const localSites: any[] = lsGetWebsites().filter(
         (l: any) => !backendSites.find((b: any) => b.id === l.id)
       )
-      const merged = [...backendSites, ...localSites]
-      return { data: { data: { websites: merged } } }
+      return { data: { websites: [...backendSites, ...localSites] } }
     } catch {
-      return { data: { data: { websites: lsGetWebsites() } } }
+      return { data: { websites: lsGetWebsites() } }
     }
   },
   getById: (id: string) => api.get(`/websites/${id}`),
   create: async (data: any) => {
     try {
-      const res = await api.post('/websites', data)
-      return res
+      return await api.post('/websites', data)
     } catch {
-      const site = lsSaveWebsite(data)
-      return { data: site }
+      return { data: lsSaveWebsite(data) }
     }
   },
   update: async (id: string, data: any) => {
