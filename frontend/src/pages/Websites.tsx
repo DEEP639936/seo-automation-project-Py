@@ -34,7 +34,7 @@ export function Websites() {
       }
       if (isEditing && currentWebsite) {
         await websiteAPI.update(currentWebsite.id, payload)
-        toast.success('Website updated successfully')
+        toast.success('Website updated')
       } else {
         await websiteAPI.create(payload)
         toast.success('Website added successfully')
@@ -66,7 +66,7 @@ export function Websites() {
     setIsAuditing(websiteId)
     try {
       await auditAPI.start(websiteId)
-      toast.success('Audit started! Check the Audits page for results.')
+      toast.success('Audit started! Check the Audits page for progress.')
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Failed to start audit')
     } finally {
@@ -102,7 +102,7 @@ export function Websites() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-dark-900">Websites</h2>
@@ -122,7 +122,7 @@ export function Websites() {
           action={{ label: 'Add Website', onClick: openCreate }}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {websites.map((website: any, index: number) => (
             <motion.div
               key={website.id}
@@ -161,20 +161,25 @@ export function Websites() {
                       <p className="text-xs text-dark-500">Last Crawled</p>
                       <p className="text-sm font-medium text-dark-700">
                         {website.last_crawled_at
-                          ? new Date(website.last_crawled_at).toLocaleDateString('en-IN')
+                          ? new Date(website.last_crawled_at).toLocaleDateString()
                           : 'Never'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 mb-4 flex-wrap">
+                  <div className="flex items-center gap-2 mb-4">
                     {(website.target_keywords || []).slice(0, 3).map((kw: string) => (
-                      <span key={kw} className="px-2 py-1 bg-dark-100 rounded-lg text-xs text-dark-600 font-medium">
+                      <span
+                        key={kw}
+                        className="px-2 py-1 bg-dark-100 rounded-lg text-xs text-dark-600 font-medium"
+                      >
                         {kw}
                       </span>
                     ))}
                     {(website.target_keywords || []).length > 3 && (
-                      <span className="text-xs text-dark-400">+{website.target_keywords.length - 3} more</span>
+                      <span className="text-xs text-dark-400">
+                        +{website.target_keywords.length - 3} more
+                      </span>
                     )}
                   </div>
 
@@ -216,7 +221,7 @@ export function Websites() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Website Name"
-            placeholder="e.g. My Company"
+            placeholder="My Company Website"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
@@ -236,16 +241,21 @@ export function Websites() {
           />
           <Input
             label="Target Keywords (comma separated)"
-            placeholder="seo, digital marketing, india..."
+            placeholder="seo, marketing, digital..."
             value={form.target_keywords}
             onChange={(e) => setForm({ ...form, target_keywords: e.target.value })}
           />
           <div className="flex gap-3 pt-2">
-            <Button type="button" variant="outline" className="flex-1" onClick={() => setIsModalOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={() => setIsModalOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" isLoading={isSubmitting} className="flex-1">
-              {isEditing ? 'Update Website' : 'Add Website'}
+              {isEditing ? 'Update' : 'Add Website'}
             </Button>
           </div>
         </form>

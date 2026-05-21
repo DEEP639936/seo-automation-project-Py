@@ -159,7 +159,7 @@ export function Audits() {
                     >
                       <div className="px-6 pb-6 border-t border-dark-100">
                         {/* Summary Stats */}
-                        <div className="grid grid-cols-4 gap-4 py-4 mb-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 py-4 mb-4">
                           <div className="text-center p-3 bg-danger-50 rounded-xl">
                             <p className="text-xl font-bold text-danger-600">{audit.critical_issues || 0}</p>
                             <p className="text-xs text-danger-500">Critical</p>

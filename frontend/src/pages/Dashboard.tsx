@@ -69,10 +69,10 @@ export function Dashboard() {
       variants={containerVariants}
       initial="hidden"
       animate="show"
-      className="space-y-8"
+      className="space-y-4 sm:space-y-8"
     >
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard
           title="Websites"
           value={stats.websites || 0}
@@ -104,7 +104,7 @@ export function Dashboard() {
       </div>
 
       {/* Main Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* SEO Score Trend */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <Card>
@@ -121,7 +121,7 @@ export function Dashboard() {
               </div>
             </CardHeader>
             <CardBody>
-              <div className="h-72">
+              <div className="h-52 sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={mockTrend}>
                     <defs>
@@ -163,7 +163,7 @@ export function Dashboard() {
               <p className="text-sm text-dark-500">Ranking positions breakdown</p>
             </CardHeader>
             <CardBody className="flex flex-col items-center">
-              <div className="h-48 w-full">
+              <div className="h-40 sm:h-48 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -197,7 +197,7 @@ export function Dashboard() {
       </div>
 
       {/* Issues & Keywords Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Issues Summary */}
         <motion.div variants={itemVariants}>
           <Card>
