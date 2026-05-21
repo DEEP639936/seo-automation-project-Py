@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { StatCard } from '@/components/ui/StatCard'
 import { useData } from '@/hooks/useData'
 import { backlinkAPI, websiteAPI } from '@/services/api'
-import { formatDate, cn } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
@@ -16,37 +16,52 @@ import {
 
 export function Backlinks() {
   const { data, isLoading, refetch } = useData(backlinkAPI.getAll)
-  const { data: websitesData } = useData(websiteAPI.getAll)
   const [selectedWebsite, setSelectedWebsite] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const backlinks = data?.data?.backlinks || []
-  const stats = data?.data?.stats || {}
-  const websites: any[] = (data as any)?.data?.websites || []
+  const rawData: any  = (data as any)?.data || {}
+  const backlinks: any[] = rawData.backlinks || []
+  const websites: any[]  = (useData(websiteAPI.getAll).data as any)?.data?.websites || []
+
+  // Compute stats from actual backlink data if backend didn't return stats
+  const rawStats: any = rawData.stats || {}
+  const dofollow = backlinks.filter((b: any) => b.link_type === 'dofollow').length
+  const nofollow = backlinks.filter((b: any) => b.link_type === 'nofollow').length
+  const active   = backlinks.filter((b: any) => !b.status || b.status === 'active').length
+  const lost     = backlinks.filter((b: any) => b.status === 'lost').length
+  const avgDa    = backlinks.length
+    ? Math.round(backlinks.reduce((s: number, b: any) => s + (b.domain_authority || 0), 0) / backlinks.length)
+    : 0
+
+  const stats = {
+    total:    rawStats.total    ?? backlinks.length,
+    dofollow: rawStats.dofollow ?? dofollow,
+    nofollow: rawStats.nofollow ?? nofollow,
+    active:   rawStats.active   ?? active,
+    lost:     rawStats.lost     ?? lost,
+    avg_da:   rawStats.avg_da   ?? avgDa,
+  }
+
+  const chartData = [
+    { name: 'Dofollow', value: stats.dofollow, color: '#22c55e' },
+    { name: 'Nofollow', value: stats.nofollow, color: '#3b82f6' },
+    { name: 'Active',   value: stats.active,   color: '#16a34a' },
+    { name: 'Lost',     value: stats.lost,      color: '#ef4444' },
+  ]
 
   const handleUpdate = async () => {
-    if (!selectedWebsite) {
-      toast.error('Please select a website')
-      return
-    }
+    if (!selectedWebsite) { toast.error('Please select a website'); return }
     setIsUpdating(true)
     try {
       await backlinkAPI.update(selectedWebsite)
       toast.success('Backlinks updated')
       refetch()
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Update failed')
+      toast.error(err?.response?.data?.message || 'Update failed')
     } finally {
       setIsUpdating(false)
     }
   }
-
-  const chartData = [
-    { name: 'Dofollow', value: stats.dofollow || 0, color: '#22c55e' },
-    { name: 'Nofollow', value: stats.nofollow || 0, color: '#3b82f6' },
-    { name: 'Active', value: stats.active || 0, color: '#16a34a' },
-    { name: 'Lost', value: stats.lost || 0, color: '#ef4444' },
-  ]
 
   if (isLoading) {
     return (
@@ -82,14 +97,12 @@ export function Backlinks() {
       </div>
 
       {/* Stats */}
-      {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard title="Total" value={stats.total || 0} icon={Link2} color="blue" />
-          <StatCard title="Dofollow" value={stats.dofollow || 0} icon={ArrowUpRight} color="green" />
-          <StatCard title="Active" value={stats.active || 0} icon={Link2} color="purple" />
-          <StatCard title="Avg DA" value={stats.avg_da || 0} icon={Globe} color="amber" />
-        </div>
-      )}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard title="Total"    value={stats.total}    icon={Link2}       color="blue"   />
+        <StatCard title="Dofollow" value={stats.dofollow} icon={ArrowUpRight} color="green"  />
+        <StatCard title="Active"   value={stats.active}   icon={Link2}       color="purple" />
+        <StatCard title="Avg DA"   value={stats.avg_da}   icon={Globe}       color="amber"  />
+      </div>
 
       {/* Chart + Table */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -133,7 +146,7 @@ export function Backlinks() {
                   <thead>
                     <tr className="border-b border-dark-100">
                       <th className="text-left px-6 py-3 text-xs font-bold text-dark-500 uppercase">Source</th>
-                      <th className="text-left px-6 py-3 text-xs font-bold text-dark-500 uppercase">Target</th>
+                      <th className="text-left px-6 py-3 text-xs font-bold text-dark-500 uppercase">Anchor</th>
                       <th className="text-left px-6 py-3 text-xs font-bold text-dark-500 uppercase">Type</th>
                       <th className="text-left px-6 py-3 text-xs font-bold text-dark-500 uppercase">DA</th>
                       <th className="text-left px-6 py-3 text-xs font-bold text-dark-500 uppercase">Status</th>
@@ -142,32 +155,41 @@ export function Backlinks() {
                   <tbody className="divide-y divide-dark-100/50">
                     {backlinks.slice(0, 20).map((bl: any, index: number) => (
                       <motion.tr
-                        key={bl.id}
+                        key={bl.id || index}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: index * 0.03 }}
                         className="hover:bg-dark-50/50 transition-colors"
                       >
                         <td className="px-6 py-3">
-                          <a href={bl.source_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline flex items-center gap-1">
-                            {bl.source_url?.slice(0, 40)}...
-                            <ExternalLink className="w-3 h-3" />
+                          <a
+                            href={bl.source_url || `https://${bl.source_domain}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary-600 hover:underline flex items-center gap-1"
+                          >
+                            {(bl.source_domain || bl.source_url || '').slice(0, 30)}
+                            <ExternalLink className="w-3 h-3 flex-shrink-0" />
                           </a>
                         </td>
                         <td className="px-6 py-3">
-                          <span className="text-xs text-dark-600">{bl.target_url?.slice(0, 40)}...</span>
+                          <span className="text-xs text-dark-600">
+                            {bl.anchor_text || bl.target_url?.slice(0, 30) || '-'}
+                          </span>
                         </td>
                         <td className="px-6 py-3">
                           <Badge variant={bl.link_type === 'dofollow' ? 'success' : 'default'} size="sm">
-                            {bl.link_type}
+                            {bl.link_type || 'dofollow'}
                           </Badge>
                         </td>
                         <td className="px-6 py-3">
-                          <span className="text-sm font-semibold text-dark-900">{bl.domain_authority || '-'}</span>
+                          <span className="text-sm font-semibold text-dark-900">
+                            {bl.domain_authority || '-'}
+                          </span>
                         </td>
                         <td className="px-6 py-3">
-                          <Badge variant={bl.status === 'active' ? 'success' : 'danger'} size="sm">
-                            {bl.status}
+                          <Badge variant={(!bl.status || bl.status === 'active') ? 'success' : 'danger'} size="sm">
+                            {bl.status || 'active'}
                           </Badge>
                         </td>
                       </motion.tr>
