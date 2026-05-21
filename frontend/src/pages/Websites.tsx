@@ -34,7 +34,7 @@ export function Websites() {
       }
       if (isEditing && currentWebsite) {
         await websiteAPI.update(currentWebsite.id, payload)
-        toast.success('Website updated')
+        toast.success('Website updated successfully')
       } else {
         await websiteAPI.create(payload)
         toast.success('Website added successfully')
@@ -66,7 +66,7 @@ export function Websites() {
     setIsAuditing(websiteId)
     try {
       await auditAPI.start(websiteId)
-      toast.success('Audit started! Check the Audits page for progress.')
+      toast.success('Audit started! Check the Audits page for results.')
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Failed to start audit')
     } finally {
@@ -161,25 +161,20 @@ export function Websites() {
                       <p className="text-xs text-dark-500">Last Crawled</p>
                       <p className="text-sm font-medium text-dark-700">
                         {website.last_crawled_at
-                          ? new Date(website.last_crawled_at).toLocaleDateString()
+                          ? new Date(website.last_crawled_at).toLocaleDateString('en-IN')
                           : 'Never'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-4 flex-wrap">
                     {(website.target_keywords || []).slice(0, 3).map((kw: string) => (
-                      <span
-                        key={kw}
-                        className="px-2 py-1 bg-dark-100 rounded-lg text-xs text-dark-600 font-medium"
-                      >
+                      <span key={kw} className="px-2 py-1 bg-dark-100 rounded-lg text-xs text-dark-600 font-medium">
                         {kw}
                       </span>
                     ))}
                     {(website.target_keywords || []).length > 3 && (
-                      <span className="text-xs text-dark-400">
-                        +{website.target_keywords.length - 3} more
-                      </span>
+                      <span className="text-xs text-dark-400">+{website.target_keywords.length - 3} more</span>
                     )}
                   </div>
 
@@ -221,7 +216,7 @@ export function Websites() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Website Name"
-            placeholder="My Company Website"
+            placeholder="e.g. My Company"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
@@ -241,21 +236,16 @@ export function Websites() {
           />
           <Input
             label="Target Keywords (comma separated)"
-            placeholder="seo, marketing, digital..."
+            placeholder="seo, digital marketing, india..."
             value={form.target_keywords}
             onChange={(e) => setForm({ ...form, target_keywords: e.target.value })}
           />
           <div className="flex gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => setIsModalOpen(false)}
-            >
+            <Button type="button" variant="outline" className="flex-1" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" isLoading={isSubmitting} className="flex-1">
-              {isEditing ? 'Update' : 'Add Website'}
+              {isEditing ? 'Update Website' : 'Add Website'}
             </Button>
           </div>
         </form>

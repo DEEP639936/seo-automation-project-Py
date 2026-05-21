@@ -6,6 +6,9 @@ import App from './App'
 import { AuthProvider } from './context/AuthContext'
 import './index.css'
 
+import { seedDemoDataIfEmpty } from './services/api'
+seedDemoDataIfEmpty()
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>

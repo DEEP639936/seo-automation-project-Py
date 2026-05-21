@@ -24,7 +24,7 @@ export function Keywords() {
   const [researchForm, setResearchForm] = useState({ seed_keyword: '', country: 'us', limit: 20 })
 
   const keywords = data?.data?.keywords || []
-  const websites = websitesData?.data?.websites || []
+  const websites: any[] = (data as any)?.data?.websites || []
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault()

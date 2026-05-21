@@ -22,7 +22,7 @@ export function Backlinks() {
 
   const backlinks = data?.data?.backlinks || []
   const stats = data?.data?.stats || {}
-  const websites = websitesData?.data?.websites || []
+  const websites: any[] = (data as any)?.data?.websites || []
 
   const handleUpdate = async () => {
     if (!selectedWebsite) {

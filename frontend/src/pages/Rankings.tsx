@@ -22,7 +22,7 @@ export function Rankings() {
   const rankings = data?.data?.keywords || []
   const stats = data?.data?.stats || {}
   const history = data?.data?.history || []
-  const websites = websitesData?.data?.websites || []
+  const websites: any[] = (data as any)?.data?.websites || []
 
   const handleUpdate = async () => {
     if (!selectedWebsite) {

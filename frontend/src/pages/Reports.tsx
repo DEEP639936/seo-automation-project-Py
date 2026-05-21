@@ -33,7 +33,7 @@ export function Reports() {
   })
 
   const reports = data?.data?.reports || []
-  const websites = websitesData?.data?.websites || []
+  const websites: any[] = (data as any)?.data?.websites || []
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
