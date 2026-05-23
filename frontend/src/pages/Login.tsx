@@ -46,6 +46,24 @@ export function Login() {
         <p className="text-sm text-dark-500 mt-1">Sign in to your SEO Automation account</p>
       </div>
 
+      {/* Demo credentials box */}
+      <div
+        onClick={() => {
+          setEmail('demo@example.com')
+          setPassword('Password123!')
+          toast.success('Demo credentials filled!')
+        }}
+        className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-5 cursor-pointer hover:bg-blue-100 transition-colors"
+      >
+        <p className="text-sm font-semibold text-blue-700 mb-1">🔑 Demo Account — click to auto-fill</p>
+        <p className="text-sm text-blue-600">
+          Email: <span className="font-mono font-bold">demo@example.com</span>
+        </p>
+        <p className="text-sm text-blue-600">
+          Password: <span className="font-mono font-bold">Password123!</span>
+        </p>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
           label="Email Address"
